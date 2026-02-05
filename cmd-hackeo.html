@@ -118,6 +118,10 @@
             z-index: 9998;
         }
 
+        #youtube-player {
+            display: none;
+        }
+
         ::-webkit-scrollbar { width: 12px; }
         ::-webkit-scrollbar-track { background: #1e1e1e; }
         ::-webkit-scrollbar-thumb { background: #555; }
@@ -128,7 +132,7 @@
         <div class="cat-container">
             <img src="https://i.ibb.co/4gjKqZSn/OIP.jpg" alt="Gato" class="cat-img" id="catImg">
             <br>
-            <button class="start-btn" id="startBtn">❤️ TOCA AQUÍ CORAZÓN ❤️</button>
+            <button class="start-btn" id="startBtn">TOCA AQUÍ (◕‿◕)✿</button>
         </div>
     </div>
 
@@ -136,17 +140,50 @@
     <div class="overlay" id="overlay"></div>
     <div class="final-message" id="finalMessage">PISASTE PALITO</div>
 
-    <audio id="hackAudio" loop>
-        <source src="https://cdn.freesound.org/previews/321/321911_5260872-lq.mp3" type="audio/mpeg">
-    </audio>
+    <div id="youtube-player"></div>
 
     <script>
         const terminal = document.getElementById('terminal');
         const overlay = document.getElementById('overlay');
         const finalMessage = document.getElementById('finalMessage');
-        const audio = document.getElementById('hackAudio');
         const startScreen = document.getElementById('startScreen');
         const startBtn = document.getElementById('startBtn');
+        
+        let player;
+        let isPlayerReady = false;
+
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('youtube-player', {
+                height: '0',
+                width: '0',
+                videoId: 'bL9MfnCUiG0',
+                playerVars: {
+                    'autoplay': 0,
+                    'controls': 0,
+                    'disablekb': 1,
+                    'fs': 0,
+                    'modestbranding': 1,
+                    'playsinline': 1,
+                    'loop': 1,
+                    'playlist': 'bL9MfnCUiG0'
+                },
+                events: {
+                    'onReady': function() {
+                        isPlayerReady = true;
+                    },
+                    'onStateChange': function(event) {
+                        if (event.data == YT.PlayerState.ENDED) {
+                            player.playVideo();
+                        }
+                    }
+                }
+            });
+        }
         
         const commands = [
             'Microsoft Windows [Versión 10.0.19045.3758]',
@@ -190,7 +227,10 @@
         let currentIndex = 0;
 
         startBtn.addEventListener('click', function() {
-            audio.play();
+            if (isPlayerReady) {
+                player.playVideo();
+            }
+            
             startScreen.style.display = 'none';
             setTimeout(typeCommands, 500);
         });
