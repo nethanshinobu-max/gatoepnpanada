@@ -84,7 +84,7 @@
     <div class="final-message" id="finalMessage">PISASTE PALITO</div>
 
     <audio id="hackAudio" loop>
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+        <source src="https://cdn.freesound.org/previews/321/321911_5260872-lq.mp3" type="audio/mpeg">
     </audio>
 
     <script>
@@ -96,27 +96,27 @@
         const commands = [
             'Microsoft Windows [Versión 10.0.19045.3758]',
             '(c) Microsoft Corporation. Todos los derechos reservados.\n',
-            'C:\\Users\\Usuario> netstat -ano',
+            'C:\Users\Usuario> netstat -ano',
             '\nConexiones activas',
             '  Proto  Dirección local        Dirección remota       Estado           PID',
             '  TCP    192.168.1.105:49842    52.178.17.3:443        ESTABLISHED     4856',
             '  TCP    192.168.1.105:49843    142.250.185.78:443     ESTABLISHED     7234',
             '  TCP    192.168.1.105:49845    185.199.108.133:443    <span class="warning">ESTABLISHED</span>     9012',
             '  TCP    192.168.1.105:49846    <span class="error">45.33.32.156:80</span>        <span class="error">SYN_SENT</span>        <span class="error">1337</span>',
-            '\nC:\\Users\\Usuario> tasklist | findstr "svchost"',
+            '\nC:\Users\Usuario> tasklist | findstr "svchost"',
             '\nsvchost.exe                  1024 Services                   0     12,456 K',
             'svchost.exe                  1248 Services                   0     18,332 K',
             '<span class="error">svchost.exe                  6666 Services                   0    666,666 K</span>',
-            '\nC:\\Users\\Usuario> dir C:\\Windows\\Temp\\*.exe /B',
+            '\nC:\Users\Usuario> dir C:\Windows\Temp\*.exe /B',
             '\n<span class="error">system32.exe</span>',
             '<span class="error">backdoor.exe</span>',
             '<span class="error">payload.exe</span>',
             '<span class="error">keylogger.exe</span>',
-            '\nC:\\Users\\Usuario> certutil -decode C:\\Windows\\Temp\\payload.exe C:\\Users\\Public\\data.zip',
+            '\nC:\Users\Usuario> certutil -decode C:\Windows\Temp\payload.exe C:\Users\Public\data.zip',
             '\n<span class="success">Entrada correctamente codificada</span>',
             '<span class="success">Longitud de salida = 2048</span>',
             '<span class="success">CertUtil: -decode comando completado correctamente.</span>',
-            '\nC:\\Users\\Usuario> start C:\\Users\\Public\\data.zip',
+            '\nC:\Users\Usuario> start C:\Users\Public\data.zip',
             '\n<span class="warning">[*] Iniciando descarga...</span>',
             '<span class="warning">[*] Extrayendo archivos del sistema...</span>',
             '<span class="warning">[*] Recopilando información personal...</span>',
@@ -128,7 +128,7 @@
             '\n<span class="success">[✓] TRANSFERENCIA COMPLETA</span>',
             '<span class="error">[✓] TUS DATOS HAN SIDO COMPROMETIDOS</span>',
             '<span class="error">[✓] SISTEMA INFECTADO</span>',
-            '\nC:\\Users\\Usuario> shutdown /s /t 0',
+            '\nC:\Users\Usuario> shutdown /s /t 0',
             '<span class="error">\nCerrando sesión...</span>'
         ];
 
@@ -182,14 +182,19 @@
             window.URL.revokeObjectURL(url);
         }
 
-        // Reproducir audio
-        window.addEventListener('load', () => {
-            audio.play().catch(() => {
-                document.body.addEventListener('click', () => {
-                    audio.play();
-                }, { once: true });
-            });
-        });
+        // Reproducir audio - múltiples intentos
+        function playAudio() {
+            audio.play().catch(() => {});
+        }
+
+        // Intentar reproducir al cargar
+        window.addEventListener('load', playAudio);
+        
+        // Intentar reproducir al hacer click
+        document.addEventListener('click', playAudio, { once: true });
+        
+        // Intentar reproducir cuando empiecen los comandos
+        setTimeout(playAudio, 600);
 
         document.addEventListener('contextmenu', e => e.preventDefault());
 
