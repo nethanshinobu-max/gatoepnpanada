@@ -1,37 +1,249 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cat Page</title>
+    <title>C:\Windows\System32\cmd.exe</title>
+    <link rel="icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
+            background-color: #0C0C0C;
+            font-family: 'Consolas', 'Courier New', monospace;
+            color: #CCCCCC;
+            overflow: hidden;
+            cursor: text;
+        }
+
+        .start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
-            height: 100vh;
-            background-color: #f0f0f0;
+            z-index: 10000;
         }
-        img {
-            max-width: 100%;
+
+        .cat-container {
+            text-align: center;
+        }
+
+        .cat-img {
+            width: 300px;
             height: auto;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 30px;
         }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin-top: 20px;
-            cursor: pointer;
-            background-color: #ff69b4;
-            border: none;
+
+        .start-btn {
+            padding: 20px 50px;
+            font-size: 28px;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ff6b9d 0%, #c06c84 100%);
             color: white;
-            border-radius: 5px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(255,107,157,0.5);
+            font-weight: bold;
         }
+
+        .start-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 30px rgba(255,107,157,0.8);
+        }
+
+        .terminal {
+            width: 100vw;
+            height: 100vh;
+            padding: 10px;
+            font-size: 13px;
+            line-height: 1.3;
+            overflow-y: auto;
+        }
+
+        .line {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .success {
+            color: #13A10E;
+        }
+
+        .error {
+            color: #C50F1F;
+        }
+
+        .warning {
+            color: #C19C00;
+        }
+
+        .final-message {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            background: #000;
+            color: #ff0000;
+            padding: 50px;
+            font-size: 60px;
+            font-weight: bold;
+            text-align: center;
+            border: 3px solid #ff0000;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9998;
+        }
+
+        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar-track { background: #1e1e1e; }
+        ::-webkit-scrollbar-thumb { background: #555; }
     </style>
 </head>
 <body>
-    <h1>Welcome to Cat Page!</h1>
-    <img src="https://placekitten.com/400/300" alt="Cute Cat">
-    <button>TOCA AQUÍ CORAZÓN</button>
+    <div class="start-screen" id="startScreen">
+        <div class="cat-container">
+            <img src="https://i.imgur.com/5qMqJ5v.jpeg" alt="Gato" class="cat-img" id="catImg">
+            <br>
+            <button class="start-btn" id="startBtn">❤️ TOCA AQUÍ CORAZÓN ❤️</button>
+        </div>
+    </div>
+
+    <div class="terminal" id="terminal"></div>
+    <div class="overlay" id="overlay"></div>
+    <div class="final-message" id="finalMessage">PISASTE PALITO</div>
+
+    <audio id="hackAudio" loop>
+        <source src="https://cdn.freesound.org/previews/321/321911_5260872-lq.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const terminal = document.getElementById('terminal');
+        const overlay = document.getElementById('overlay');
+        const finalMessage = document.getElementById('finalMessage');
+        const audio = document.getElementById('hackAudio');
+        const startScreen = document.getElementById('startScreen');
+        const startBtn = document.getElementById('startBtn');
+        
+        const commands = [
+            'Microsoft Windows [Versión 10.0.19045.3758]',
+            '(c) Microsoft Corporation. Todos los derechos reservados.\n',
+            'C:\Users\Usuario> netstat -ano',
+            '\nConexiones activas',
+            '  Proto  Dirección local        Dirección remota       Estado           PID',
+            '  TCP    192.168.1.105:49842    52.178.17.3:443        ESTABLISHED     4856',
+            '  TCP    192.168.1.105:49843    142.250.185.78:443     ESTABLISHED     7234',
+            '  TCP    192.168.1.105:49845    185.199.108.133:443    <span class="warning">ESTABLISHED</span>     9012',
+            '  TCP    192.168.1.105:49846    <span class="error">45.33.32.156:80</span>        <span class="error">SYN_SENT</span>        <span class="error">1337</span>',
+            '\nC:\Users\Usuario> tasklist | findstr "svchost"',
+            '\nsvchost.exe                  1024 Services                   0     12,456 K',
+            'svchost.exe                  1248 Services                   0     18,332 K',
+            '<span class="error">svchost.exe                  6666 Services                   0    666,666 K</span>',
+            '\nC:\Users\Usuario> dir C:\Windows\Temp\*.exe /B',
+            '\n<span class="error">system32.exe</span>',
+            '<span class="error">backdoor.exe</span>',
+            '<span class="error">payload.exe</span>',
+            '<span class="error">keylogger.exe</span>',
+            '\nC:\Users\Usuario> certutil -decode C:\Windows\Temp\payload.exe C:\Users\Public\data.zip',
+            '\n<span class="success">Entrada correctamente codificada</span>',
+            '<span class="success">Longitud de salida = 2048</span>',
+            '<span class="success">CertUtil: -decode comando completado correctamente.</span>',
+            '\nC:\Users\Usuario> start C:\Users\Public\data.zip',
+            '\n<span class="warning">[*] Iniciando descarga...</span>',
+            '<span class="warning">[*] Extrayendo archivos del sistema...</span>',
+            '<span class="warning">[*] Recopilando información personal...</span>',
+            '<span class="warning">[*] Accediendo a historial de navegación...</span>',
+            '<span class="error">[*] Obteniendo contraseñas guardadas...</span>',
+            '<span class="error">[*] Capturando pantalla...</span>',
+            '<span class="error">[*] Activando webcam...</span>',
+            '<span class="error">[*] Enviando datos a servidor remoto: 45.33.32.156:8080...</span>',
+            '\n<span class="success">[✓] TRANSFERENCIA COMPLETA</span>',
+            '<span class="error">[✓] TUS DATOS HAN SIDO COMPROMETIDOS</span>',
+            '<span class="error">[✓] SISTEMA INFECTADO</span>',
+            '\nC:\Users\Usuario> shutdown /s /t 0',
+            '<span class="error">\nCerrando sesión...</span>'
+        ];
+
+        let currentIndex = 0;
+
+        startBtn.addEventListener('click', function() {
+            audio.play();
+            startScreen.style.display = 'none';
+            setTimeout(typeCommands, 500);
+        });
+
+        function addLine(text) {
+            const line = document.createElement('div');
+            line.className = 'line';
+            line.innerHTML = text;
+            terminal.appendChild(line);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function typeCommands() {
+            if (currentIndex < commands.length) {
+                addLine(commands[currentIndex]);
+                currentIndex++;
+                setTimeout(typeCommands, 30);
+            } else {
+                setTimeout(() => {
+                    showFinalMessage();
+                    downloadFile();
+                }, 1000);
+            }
+        }
+
+        function showFinalMessage() {
+            overlay.style.display = 'block';
+            finalMessage.style.display = 'block';
+        }
+
+        function generateRandomNumbers() {
+            let numbers = '';
+            for (let i = 0; i < 5000; i++) {
+                numbers += Math.floor(Math.random() * 1000000000) + '\n';
+            }
+            return numbers;
+        }
+
+        function downloadFile() {
+            const content = generateRandomNumbers();
+            
+            const blob = new Blob([content], { type: 'application/octet-stream' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'system32.exe';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        document.addEventListener('contextmenu', e => e.preventDefault());
+    </script>
 </body>
 </html>
