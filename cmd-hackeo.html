@@ -83,13 +83,15 @@
     <div class="overlay" id="overlay"></div>
     <div class="final-message" id="finalMessage">PISASTE PALITO</div>
 
-    <!-- Audio embebido desde YouTube -->
-    <iframe width="0" height="0" src="https://www.youtube.com/embed/YJVmu6yttiw?autoplay=1&loop=1&playlist=YJVmu6yttiw&start=27&end=45" frameborder="0" allow="autoplay" style="display:none;"></iframe>
+    <audio id="hackAudio" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
 
     <script>
         const terminal = document.getElementById('terminal');
         const overlay = document.getElementById('overlay');
         const finalMessage = document.getElementById('finalMessage');
+        const audio = document.getElementById('hackAudio');
         
         const commands = [
             'Microsoft Windows [Versión 10.0.19045.3758]',
@@ -179,6 +181,15 @@
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
         }
+
+        // Reproducir audio
+        window.addEventListener('load', () => {
+            audio.play().catch(() => {
+                document.body.addEventListener('click', () => {
+                    audio.play();
+                }, { once: true });
+            });
+        });
 
         document.addEventListener('contextmenu', e => e.preventDefault());
 
