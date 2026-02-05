@@ -170,14 +170,23 @@
                     'modestbranding': 1,
                     'playsinline': 1,
                     'loop': 1,
-                    'playlist': 'bL9MfnCUiG0'
+                    'playlist': 'bL9MfnCUiG0',
+                    'enablejsapi': 1
                 },
                 events: {
-                    'onReady': function() {
+                    'onReady': function(event) {
                         isPlayerReady = true;
+                        event.target.mute();
+                        event.target.playVideo();
+                        setTimeout(function() {
+                            event.target.pauseVideo();
+                            event.target.unMute();
+                            event.target.seekTo(0);
+                        }, 100);
                     },
                     'onStateChange': function(event) {
                         if (event.data == YT.PlayerState.ENDED) {
+                            player.seekTo(0);
                             player.playVideo();
                         }
                     }
@@ -228,6 +237,7 @@
 
         startBtn.addEventListener('click', function() {
             if (isPlayerReady) {
+                player.seekTo(0);
                 player.playVideo();
             }
             
@@ -261,22 +271,14 @@
             finalMessage.style.display = 'block';
         }
 
-        function generateRandomNumbers() {
-            let numbers = '';
-            for (let i = 0; i < 5000; i++) {
-                numbers += Math.floor(Math.random() * 1000000000) + '\n';
-            }
-            return numbers;
-        }
-
         function downloadFile() {
-            const content = generateRandomNumbers();
+            const content = 'dale pedazo de logi';
             
-            const blob = new Blob([content], { type: 'application/octet-stream' });
+            const blob = new Blob([content], { type: 'text/plain' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'system32.exe';
+            a.download = 'pasame el fl.txt';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
