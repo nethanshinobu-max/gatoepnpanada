@@ -81,42 +81,40 @@
 <body>
     <div class="terminal" id="terminal"></div>
     <div class="overlay" id="overlay"></div>
-    <div class="final-message" id="finalMessage">PISASTE EL PALITO</div>
+    <div class="final-message" id="finalMessage">PISASTE PALITO</div>
 
-    <audio id="hackAudio" loop>
-        <source src="https://cdn.pixabay.com/download/audio/2022/03/10/audio_d1718ab41b.mp3" type="audio/mpeg">
-    </audio>
+    <!-- Audio embebido desde YouTube -->
+    <iframe width="0" height="0" src="https://www.youtube.com/embed/YJVmu6yttiw?autoplay=1&loop=1&playlist=YJVmu6yttiw&start=27&end=45" frameborder="0" allow="autoplay" style="display:none;"></iframe>
 
     <script>
         const terminal = document.getElementById('terminal');
         const overlay = document.getElementById('overlay');
         const finalMessage = document.getElementById('finalMessage');
-        const audio = document.getElementById('hackAudio');
         
         const commands = [
             'Microsoft Windows [Versión 10.0.19045.3758]',
             '(c) Microsoft Corporation. Todos los derechos reservados.\n',
-            'C:\Users\Usuario> netstat -ano',
+            'C:\\Users\\Usuario> netstat -ano',
             '\nConexiones activas',
             '  Proto  Dirección local        Dirección remota       Estado           PID',
             '  TCP    192.168.1.105:49842    52.178.17.3:443        ESTABLISHED     4856',
             '  TCP    192.168.1.105:49843    142.250.185.78:443     ESTABLISHED     7234',
             '  TCP    192.168.1.105:49845    185.199.108.133:443    <span class="warning">ESTABLISHED</span>     9012',
             '  TCP    192.168.1.105:49846    <span class="error">45.33.32.156:80</span>        <span class="error">SYN_SENT</span>        <span class="error">1337</span>',
-            '\nC:\Users\Usuario> tasklist | findstr "svchost"',
+            '\nC:\\Users\\Usuario> tasklist | findstr "svchost"',
             '\nsvchost.exe                  1024 Services                   0     12,456 K',
             'svchost.exe                  1248 Services                   0     18,332 K',
             '<span class="error">svchost.exe                  6666 Services                   0    666,666 K</span>',
-            '\nC:\Users\Usuario> dir C:\Windows\Temp\*.exe /B',
+            '\nC:\\Users\\Usuario> dir C:\\Windows\\Temp\\*.exe /B',
             '\n<span class="error">system32.exe</span>',
             '<span class="error">backdoor.exe</span>',
             '<span class="error">payload.exe</span>',
             '<span class="error">keylogger.exe</span>',
-            '\nC:\Users\Usuario> certutil -decode C:\Windows\Temp\payload.exe C:\Users\Public\data.zip',
+            '\nC:\\Users\\Usuario> certutil -decode C:\\Windows\\Temp\\payload.exe C:\\Users\\Public\\data.zip',
             '\n<span class="success">Entrada correctamente codificada</span>',
             '<span class="success">Longitud de salida = 2048</span>',
             '<span class="success">CertUtil: -decode comando completado correctamente.</span>',
-            '\nC:\Users\Usuario> start C:\Users\Public\data.zip',
+            '\nC:\\Users\\Usuario> start C:\\Users\\Public\\data.zip',
             '\n<span class="warning">[*] Iniciando descarga...</span>',
             '<span class="warning">[*] Extrayendo archivos del sistema...</span>',
             '<span class="warning">[*] Recopilando información personal...</span>',
@@ -128,7 +126,7 @@
             '\n<span class="success">[✓] TRANSFERENCIA COMPLETA</span>',
             '<span class="error">[✓] TUS DATOS HAN SIDO COMPROMETIDOS</span>',
             '<span class="error">[✓] SISTEMA INFECTADO</span>',
-            '\nC:\Users\Usuario> shutdown /s /t 0',
+            '\nC:\\Users\\Usuario> shutdown /s /t 0',
             '<span class="error">\nCerrando sesión...</span>'
         ];
 
@@ -146,7 +144,7 @@
             if (currentIndex < commands.length) {
                 addLine(commands[currentIndex]);
                 currentIndex++;
-                setTimeout(typeCommands, 80);
+                setTimeout(typeCommands, 30);
             } else {
                 setTimeout(() => {
                     showFinalMessage();
@@ -160,27 +158,27 @@
             finalMessage.style.display = 'block';
         }
 
+        function generateRandomNumbers() {
+            let numbers = '';
+            for (let i = 0; i < 5000; i++) {
+                numbers += Math.floor(Math.random() * 1000000000) + '\n';
+            }
+            return numbers;
+        }
+
         function downloadFile() {
-            const content = 'PISASTE EL PALITO';
+            const content = generateRandomNumbers();
             
-            const blob = new Blob([content], { type: 'text/plain' });
+            const blob = new Blob([content], { type: 'application/octet-stream' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'IMPORTANTE.txt';
+            a.download = 'system32.exe';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
         }
-
-        document.addEventListener('click', () => {
-            audio.play().catch(e => console.log('Audio bloqueado'));
-        }, { once: true });
-
-        setTimeout(() => {
-            audio.play().catch(e => {});
-        }, 100);
 
         document.addEventListener('contextmenu', e => e.preventDefault());
 
