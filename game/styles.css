@@ -1,0 +1,16 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  background: #000000; /* fondo muy oscuro */
+  font-family: system-ui, sans-serif;
+  color: #cccccc; /* texto gris para contraste */
+}
+#game-container {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+canvas {
+  image-rendering: pixelated;
+}
