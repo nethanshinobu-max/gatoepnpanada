@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gato Game</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #0a0a0a;
+        }
+        #game-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container"></div>
+    <script>
+        const config = {
+            type: Phaser.AUTO,
+            width: 800,
+            height: 600,
+            parent: 'game-container',
+            backgroundColor: '#0a0a0a',
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: { y: 0 },
+                    debug: false
+                }
+            },
+            scene: {
+                create: create,
+                update: update
+            }
+        };
+
+        const game = new Phaser.Game(config);
+        
+        let player;
+        let heart;
+        let cursors;
+        let lives = 3;
+        let livesText;
+        let gameOver = false;
+        let gameOverText;
+        let restartText;
+        let heartSpeed = 200;
+        let lastHitTime = 0;
+        const hitCooldown = 1000; // 1 second cooldown between hits
+
+        function create() {
+            // Create player (black cat)
+            player = this.add.rectangle(100, 300, 40, 40, 0x000000);
+            this.physics.add.existing(player);
+            player.body.setCollideWorldBounds(true);
+            
+            // Add white outline to see the black cat
+            const graphics = this.add.graphics();
+            graphics.lineStyle(2, 0xffffff);
+            graphics.strokeRect(player.x - 20, player.y - 20, 40, 40);
+            
+            // Create heart
+            heart = this.add.text(400, 300, '❤️', { fontSize: '48px' });
+            this.physics.add.existing(heart);
+            heart.body.setVelocity(
+                Phaser.Math.Between(-heartSpeed, heartSpeed),
+                Phaser.Math.Between(-heartSpeed, heartSpeed)
+            );
+            heart.body.setBounce(1);
+            heart.body.setCollideWorldBounds(true);
+            
+            // Create lives text
+            livesText = this.add.text(16, 16, 'Lives: 3', { 
+                fontSize: '24px', 
+                fill: '#ffffff' 
+            });
+            
+            // Create keyboard input
+            cursors = this.input.keyboard.createCursorKeys();
+            
+            // Add R key for restart
+            this.input.keyboard.on('keydown-R', () => {
+                if (gameOver) {
+                    restartGame(this);
+                }
+            });
+            
+            // Store graphics reference for update
+            this.catOutline = graphics;
+        }
+
+        function update(time) {
+            if (gameOver) {
+                return;
+            }
+            
+            // Player movement
+            const speed = 300;
+            player.body.setVelocity(0);
+            
+            if (cursors.left.isDown) {
+                player.body.setVelocityX(-speed);
+            } else if (cursors.right.isDown) {
+                player.body.setVelocityX(speed);
+            }
+            
+            if (cursors.up.isDown) {
+                player.body.setVelocityY(-speed);
+            } else if (cursors.down.isDown) {
+                player.body.setVelocityY(speed);
+            }
+            
+            // Update cat outline position
+            this.catOutline.clear();
+            this.catOutline.lineStyle(2, 0xffffff);
+            this.catOutline.strokeRect(player.x - 20, player.y - 20, 40, 40);
+            
+            // Check collision with heart
+            const distance = Phaser.Math.Distance.Between(
+                player.x, player.y,
+                heart.x, heart.y
+            );
+            
+            if (distance < 40 && time - lastHitTime > hitCooldown) {
+                lastHitTime = time;
+                lives--;
+                livesText.setText('Lives: ' + lives);
+                
+                // Flash the screen
+                this.cameras.main.flash(200, 255, 0, 0);
+                
+                // Increase heart speed
+                heartSpeed += 50;
+                const currentVelocity = heart.body.velocity;
+                const angle = Math.atan2(currentVelocity.y, currentVelocity.x);
+                heart.body.setVelocity(
+                    Math.cos(angle) * heartSpeed,
+                    Math.sin(angle) * heartSpeed
+                );
+                
+                if (lives <= 0) {
+                    endGame(this);
+                }
+            }
+        }
+
+        function endGame(scene) {
+            gameOver = true;
+            heart.body.setVelocity(0);
+            
+            // Game Over text
+            gameOverText = scene.add.text(400, 250, 'GAME OVER', {
+                fontSize: '64px',
+                fill: '#ff0000',
+                fontStyle: 'bold'
+            });
+            gameOverText.setOrigin(0.5);
+            
+            // Restart instruction
+            restartText = scene.add.text(400, 350, 'Press R to Restart', {
+                fontSize: '32px',
+                fill: '#ffffff'
+            });
+            restartText.setOrigin(0.5);
+        }
+
+        function restartGame(scene) {
+            // Reset game state
+            gameOver = false;
+            lives = 3;
+            heartSpeed = 200;
+            lastHitTime = 0;
+            
+            // Remove game over texts
+            if (gameOverText) gameOverText.destroy();
+            if (restartText) restartText.destroy();
+            
+            // Reset player position
+            player.x = 100;
+            player.y = 300;
+            player.body.setVelocity(0);
+            
+            // Reset heart position and velocity
+            heart.x = 400;
+            heart.y = 300;
+            heart.body.setVelocity(
+                Phaser.Math.Between(-heartSpeed, heartSpeed),
+                Phaser.Math.Between(-heartSpeed, heartSpeed)
+            );
+            
+            // Update lives text
+            livesText.setText('Lives: 3');
+        }
+    </script>
+</body>
+</html>
