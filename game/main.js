@@ -1,5 +1,9 @@
 // Gato vs Corazón - Mini juego con vidas y contador de tiempo
 const W = 640, H = 360;
+const PLAYER_SPEED = 170;
+const HEART_ACCELERATION_FACTOR = 1.06;
+const HEART_MAX_SPEED = 950;
+const DEATH_OVERLAY_DURATION = 1200;
 
 const config = {
   type: Phaser.AUTO,
@@ -92,7 +96,7 @@ function create() {
   // Acelerar en cada rebote con la pared
   this.physics.world.on("worldbounds", (body) => {
     if (body.gameObject === corazon) {
-      accelerateHeart(corazon, 1.06, 950);
+      accelerateHeart(corazon, HEART_ACCELERATION_FACTOR, HEART_MAX_SPEED);
     }
   });
 
@@ -120,12 +124,11 @@ function update() {
   }
   if (isDead) return;
 
-  const speed = 170;
   player.setVelocity(0);
-  if (cursors.left.isDown) player.setVelocityX(-speed);
-  else if (cursors.right.isDown) player.setVelocityX(speed);
-  if (cursors.up.isDown) player.setVelocityY(-speed);
-  else if (cursors.down.isDown) player.setVelocityY(speed);
+  if (cursors.left.isDown) player.setVelocityX(-PLAYER_SPEED);
+  else if (cursors.right.isDown) player.setVelocityX(PLAYER_SPEED);
+  if (cursors.up.isDown) player.setVelocityY(-PLAYER_SPEED);
+  else if (cursors.down.isDown) player.setVelocityY(PLAYER_SPEED);
 
   const elapsed = (this.time.now - runStartTime) / 1000;
   timerText.setText(`Tiempo: ${elapsed.toFixed(1)} s`);
@@ -162,7 +165,7 @@ function onHit() {
   lives -= 1;
   livesText.setText(`Vidas: ${lives}`);
 
-  this.time.delayedCall(1200, () => {
+  this.time.delayedCall(DEATH_OVERLAY_DURATION, () => {
     overlay.destroy(); msg.destroy(); stats.destroy();
     if (lives > 0) {
       this.physics.resume();
