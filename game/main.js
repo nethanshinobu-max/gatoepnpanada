@@ -1,14 +1,20 @@
+// Game constants
+const INITIAL_HEART_SPEED = 3;
+const INITIAL_LIVES = 3;
+const CAT_SPEED = 20;
+const ACCELERATION_MULTIPLIER = 1.05;
+const MAX_RANDOM_VELOCITY = 6;
+
 // Game state
 let catX = 100;
 let catY = 100;
 let heartX = 300;
 let heartY = 300;
-let heartVelX = 3;
-let heartVelY = 3;
-let heartSpeed = 3;
-let lives = 3;
+let heartVelX = INITIAL_HEART_SPEED;
+let heartVelY = INITIAL_HEART_SPEED;
+let heartSpeed = INITIAL_HEART_SPEED;
+let lives = INITIAL_LIVES;
 let isGameOver = false;
-const catSpeed = 20;
 
 // DOM elements
 const cat = document.getElementById('cat');
@@ -45,16 +51,16 @@ function moveCat() {
   if (isGameOver) return;
   
   if (keys['ArrowUp'] && catY > 0) {
-    catY -= catSpeed;
+    catY -= CAT_SPEED;
   }
   if (keys['ArrowDown'] && catY < window.innerHeight - 50) {
-    catY += catSpeed;
+    catY += CAT_SPEED;
   }
   if (keys['ArrowLeft'] && catX > 0) {
-    catX -= catSpeed;
+    catX -= CAT_SPEED;
   }
   if (keys['ArrowRight'] && catX < window.innerWidth - 50) {
-    catX += catSpeed;
+    catX += CAT_SPEED;
   }
   
   cat.style.left = catX + 'px';
@@ -84,7 +90,7 @@ function moveHeart() {
 
 // Accelerate heart on bounce
 function accelerateHeart() {
-  heartSpeed *= 1.05;
+  heartSpeed *= ACCELERATION_MULTIPLIER;
   const angle = Math.atan2(heartVelY, heartVelX);
   heartVelX = Math.cos(angle) * heartSpeed;
   heartVelY = Math.sin(angle) * heartSpeed;
@@ -112,9 +118,9 @@ function checkCollision() {
       // Reset heart position
       heartX = Math.random() * (window.innerWidth - 100) + 50;
       heartY = Math.random() * (window.innerHeight - 100) + 50;
-      heartVelX = (Math.random() - 0.5) * 6;
-      heartVelY = (Math.random() - 0.5) * 6;
-      heartSpeed = 3;
+      heartVelX = (Math.random() - 0.5) * MAX_RANDOM_VELOCITY;
+      heartVelY = (Math.random() - 0.5) * MAX_RANDOM_VELOCITY;
+      heartSpeed = INITIAL_HEART_SPEED;
     }
   }
 }
@@ -127,15 +133,15 @@ function gameOver() {
 
 // Restart game
 function restartGame() {
-  lives = 3;
+  lives = INITIAL_LIVES;
   isGameOver = false;
   catX = 100;
   catY = 100;
   heartX = 300;
   heartY = 300;
-  heartVelX = 3;
-  heartVelY = 3;
-  heartSpeed = 3;
+  heartVelX = INITIAL_HEART_SPEED;
+  heartVelY = INITIAL_HEART_SPEED;
+  heartSpeed = INITIAL_HEART_SPEED;
   
   livesDisplay.textContent = 'Vidas: ' + lives;
   gameOverScreen.classList.remove('show');
