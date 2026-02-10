@@ -1,6 +1,6 @@
 # Gato vs Corazón (Phaser 3)
 
-Mini‑juego 2D donde el gato evita un corazón que rebota y acelera.
+Mini-juego 2D donde el gato evita un corazón que rebota y acelera.
 - 3 vidas por partida.
 - Contador de tiempo en cada vida y total acumulado.
 - Acelera en cada choque con la pared.
