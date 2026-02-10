@@ -1,6 +1,13 @@
 // Gato vs Corazón - Mini juego con vidas y contador de tiempo
 const W = 640, H = 360;
 
+// Game constants
+const PLAYER_SPEED = 170;
+const INITIAL_HEART_SPEED = 220;
+const RESTART_HEART_SPEED = 240;
+const HEART_ACCELERATION_FACTOR = 1.06;
+const MAX_HEART_SPEED = 950;
+
 const config = {
   type: Phaser.AUTO,
   parent: "game-container",
@@ -89,12 +96,12 @@ function create() {
   corazon.body.onWorldBounds = true;
   corazon.setBounce(1, 1);
   // Velocidad inicial
-  setHeartVelocity(corazon, 220);
+  setHeartVelocity(corazon, INITIAL_HEART_SPEED);
 
   // Acelerar en cada rebote con la pared
   this.physics.world.on("worldbounds", (body) => {
     if (body.gameObject === corazon) {
-      accelerateHeart(corazon, 1.06, 950); // 6% por rebote, tope ~950 px/s
+      accelerateHeart(corazon, HEART_ACCELERATION_FACTOR, MAX_HEART_SPEED);
     }
   });
 
@@ -122,12 +129,11 @@ function update() {
   }
   if (isDead) return;
 
-  const speed = 170;
   player.setVelocity(0);
-  if (cursors.left.isDown) player.setVelocityX(-speed);
-  else if (cursors.right.isDown) player.setVelocityX(speed);
-  if (cursors.up.isDown) player.setVelocityY(-speed);
-  else if (cursors.down.isDown) player.setVelocityY(speed);
+  if (cursors.left.isDown) player.setVelocityX(-PLAYER_SPEED);
+  else if (cursors.right.isDown) player.setVelocityX(PLAYER_SPEED);
+  if (cursors.up.isDown) player.setVelocityY(-PLAYER_SPEED);
+  else if (cursors.down.isDown) player.setVelocityY(PLAYER_SPEED);
 
   // Actualizar contador de tiempo
   const elapsed = (this.time.now - runStartTime) / 1000;
@@ -178,7 +184,7 @@ function onHit() {
       player.setPosition(W / 2, H / 2);
 
       corazon.setPosition(Phaser.Math.Between(32, W - 32), Phaser.Math.Between(32, H - 32));
-      setHeartVelocity(corazon, 240); // reinicia rápido
+      setHeartVelocity(corazon, RESTART_HEART_SPEED);
       runStartTime = this.time.now;
       isDead = false;
     } else {
@@ -215,7 +221,7 @@ function fullRestart() {
   player.setPosition(W / 2, H / 2);
 
   corazon.setPosition(Phaser.Math.Between(32, W - 32), Phaser.Math.Between(32, H - 32));
-  setHeartVelocity(corazon, 240);
+  setHeartVelocity(corazon, RESTART_HEART_SPEED);
 
   // Reanudar y reiniciar contador
   this.physics.resume();
